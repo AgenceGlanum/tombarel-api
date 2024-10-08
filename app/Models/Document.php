@@ -11,15 +11,10 @@ class Document extends Model
 
     protected $guarded = [];
 
-    protected $table = 'dossiers';
+    protected $table = 'documents';
 
-    public function getAllDocuments()
+    public function request(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return self::all();
-    }
-
-    public function getDocument($id)
-    {
-        return self::find($id);
+        return $this->belongsTo(Request::class);
     }
 }

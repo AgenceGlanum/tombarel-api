@@ -57,35 +57,39 @@ class AuthController extends Controller
 
     public function getTenantId(Request $request)
     {
-        return ['tenant_id' => $request->user()->tenant_id];
-
-        return response()->json(['message' => 'Une erreur est survenue'], $response->getStatusCode());
+        return ['tenant_id' => $request->user()->tenant_id ?? null];
     }
 
     public function tenantId(Request $request)
     {
-        dd($request);
+        $data = $request->validate([
+            "tenant_id" => "required","integer",
+            "user_id" => "required",'integer'
+        ]);
         //modifier ou insert le tenantId de l'user
+        $user = User::query()->where('id', $data['user_id'])->first();
+        $user->tenant_id = $data['tenant_id'];
+        $user->save();
 
-//        return response()->json(['message' => 'Une erreur est survenue'], $response->getStatusCode());
+        return ['user' => $user,'tenant_id' => $user->tenant_id ?? null];
     }
 
-    public function getOffice(Request $request)
+    public function getOffice(Request $request): array
     {
-        dd($request);
-        //récuperer l'utilisateur->id via son bearer puis son tenantId
-        $user = User::query()->where('email', $data['email'])->first();
-
-        //
-
-        return response()->json(['message' => 'Une erreur est survenue'], $response->getStatusCode());
+        return ['office' => $request->user()->office() ?? ''];
     }
 
-    public function updateOffice(Request $request)
+    public function updateOffice(Request $request): array
     {
-        dd($request);
-        //modifier ou insert le tenantId de l'user
+        $data = $request->validate([
+            "office" => "required|string",
+            "id" => "required",'integer'
+        ]);
 
-//        return response()->json(['message' => 'Une erreur est survenue'], $response->getStatusCode());
+        $user = User::query()->where('id', $data['id'])->first();
+        $user->office = $data['office'];
+        $user->save();
+
+        return ['user' => $user,'office' => $user->office ?? null];
     }
 }

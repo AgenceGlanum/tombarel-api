@@ -25,11 +25,12 @@ Route::prefix('v1')->group(function () {
     Route::get('/tenantID', [AuthController::class, 'getTenantId'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
     Route::put('/tenantID', [AuthController::class, 'tenantId'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
 
-    Route::get('/office', [AuthController::class, 'getOffice']);
-    Route::put('/office', [AuthController::class, 'updateOffice']);
+    Route::get('/office', [AuthController::class, 'getOffice'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::put('/office', [AuthController::class, 'updateOffice'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
 
-    Route::get('/folders', [DocumentsController::class, 'index'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::get('/folder/{folder_id}', [DocumentsController::class, 'index'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::get('/file/{id}', [DocumentsController::class, 'index'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/folders', [DocumentsController::class, 'folders'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/folder/{folder_id}', [DocumentsController::class, 'searchFolders'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::put('/folder/{folder_id}/request', [DocumentsController::class, 'insertRequest'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/request/{request_id}', [DocumentsController::class, 'folderByRequest'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
 });
 
