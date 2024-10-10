@@ -10,6 +10,7 @@ class Request extends Model
     use HasFactory;
 
     protected $table = 'requests';
+    protected $fillable = ['user_id','tenant_id','folder_id'];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

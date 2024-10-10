@@ -14,23 +14,19 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Ajoutez vos routes API ici
 
 Route::prefix('v1')->group(function () {
-//    Route::post('/tokens/create', function (Request $request) {
-//        $token = $request->user()->createToken($request->token_name);
-//
-//        return ['token' => $token->plainTextToken];
-//    });
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/token', [AuthController::class, 'token']);
     Route::get('/', [AuthController::class, 'healthcheck']);
-    Route::get('/tenantID', [AuthController::class, 'getTenantId'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::put('/tenantID', [AuthController::class, 'tenantId'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/tenantID', [AuthController::class, 'getTenantId']);
+    Route::put('/tenantID', [AuthController::class, 'tenantId']);
 
-    Route::get('/office', [AuthController::class, 'getOffice'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::put('/office', [AuthController::class, 'updateOffice'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/office', [AuthController::class, 'getOffice']);
+    Route::put('/office', [AuthController::class, 'updateOffice']);
 
-    Route::get('/folders', [DocumentsController::class, 'folders'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::get('/folder/{folder_id}', [DocumentsController::class, 'searchFolders'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::put('/folder/{folder_id}/request', [DocumentsController::class, 'insertRequest'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
-    Route::get('/request/{request_id}', [DocumentsController::class, 'folderByRequest'])->middleware(EnsureTokenIsValid::class)->middleware('auth:sanctum');
+    Route::get('/folders', [DocumentsController::class, 'folders']);
+    Route::get('/search_folders', [DocumentsController::class, 'searchFolders']);
+    Route::get('/folders/{folder_id}', [DocumentsController::class, 'folderById']);
+    Route::put('/folder/{folder_id}/request', [DocumentsController::class, 'insertRequest']);
+    Route::get('/request/{request_id}', [DocumentsController::class, 'folderByRequest']);
 });
 

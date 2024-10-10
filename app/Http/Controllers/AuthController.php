@@ -28,17 +28,18 @@ class AuthController extends Controller
     public function token(Request $request)
     {
         $data = $request->validate([
-            "email" => "required|email",
+            "name" => "required|string",
             "password" => "required",'min:6'
         ]);
 
-        $user = User::query()->where('email', $data['email'])->first();
+        $user = User::query()->where('name', $data['name'])->first();
 
         if(!$user || !Hash::check($data['password'], $user->password)){
             return response(['message' => 'bad credentials'], 401);
         }
 
-        $token = $user->createToken('authToken')->plainTextToken;
+        $token = $user->token;
+//        $token = $user->createToken('authToken')->plainTextToken;
 
         return ['token' => $token, 'user' => $user];
     }
@@ -57,7 +58,8 @@ class AuthController extends Controller
 
     public function getTenantId(Request $request)
     {
-        return ['tenant_id' => $request->user()->tenant_id ?? null];
+        $user = User::query()->where('token', $request->bearerToken())->first();
+        return ['tenant_id' => $user->tenant_id ?? null];
     }
 
     public function tenantId(Request $request)
@@ -71,12 +73,14 @@ class AuthController extends Controller
         $user->tenant_id = $data['tenant_id'];
         $user->save();
 
-        return ['user' => $user,'tenant_id' => $user->tenant_id ?? null];
+        return ['user' => $user, 'tenant_id' => $user->tenant_id ?? null];
     }
 
     public function getOffice(Request $request): array
     {
-        return ['office' => $request->user()->office() ?? ''];
+        $user = User::query()->where('token', $request->bearerToken())->first();
+
+        return ['office' => $user->office ?? ''];
     }
 
     public function updateOffice(Request $request): array
@@ -85,6 +89,13 @@ class AuthController extends Controller
             "office" => "required|string",
             "id" => "required",'integer'
         ]);
+
+        //permettre le changement si l'utilisateur a un token ok.
+        $userToPermit = User::query()->where('token', $request->bearerToken())->first();
+
+        if(!$userToPermit){
+            return response(['message' => 'non authentifié'], 401);
+        }
 
         $user = User::query()->where('id', $data['id'])->first();
         $user->office = $data['office'];
